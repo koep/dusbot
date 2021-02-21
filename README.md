@@ -353,3 +353,4 @@ $ oc -n dusbot-prod get route dusbot -o jsonpath='{..spec.host}'
 You will have to append `/webhooks/hangouts/webhook` to the respective route URL (`https://dusbot-dusbot-test.apps.cluster.example.com/webhooks/hangouts/webhook`).
 
 ![Google Chat Configuration](https://i.imgur.com/AYzzhqu.png).
+
