@@ -1,0 +1,47 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: awscli
+spec:
+  description: >-
+    This task enables the user to us the AWS CLI in a pipeline.
+  workspaces:
+    - name: output
+  params:
+    - name: command
+      description: The subcommand of the AWS CLI the pipeline step should run.
+      type: string
+  steps:
+    - name: awscli
+      # https://hub.docker.com/r/amazon/aws-cli
+      image: docker.io/amazon/aws-cli:2.1.21
+      script: |
+        #!/usr/bin/env bash
+        set -e
+        $(params.command) --endpoint-url=${AWS_ENDPOINT_URL} --output text
+      env:
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-access-tokens
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-access-tokens
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_DEFAULT_REGION
+          valueFrom:
+            secretKeyRef:
+              name: aws-access-tokens
+              key: AWS_DEFAULT_REGION
+        - name: BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: aws-access-tokens
+              key: BUCKET_NAME
+        - name: AWS_ENDPOINT_URL
+          valueFrom:
+            secretKeyRef:
+              name: aws-access-tokens
+              key: AWS_ENDPOINT_URL

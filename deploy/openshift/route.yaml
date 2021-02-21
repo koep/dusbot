@@ -1,0 +1,21 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: dusbot
+    app.kubernetes.io/component: dusbot
+    app.kubernetes.io/instance: dusbot
+    app.kubernetes.io/part-of: DUSBot
+    app.openshift.io/runtime-version: latest
+  name: dusbot
+spec:
+  port:
+    targetPort: 5005-tcp
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: dusbot
+    weight: 100
+  wildcardPolicy: None

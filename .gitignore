@@ -1,0 +1,15 @@
+credentials.yml
+models/*
+!models/placeholder.txt
+*.dot
+.cache/
+.config/
+.keras/
+results/*
+!results/placeholder.txt
+.bash_history
+train_test_split
+*.swp
+.vscode
+*__pycache__
+.pytest_cache

@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: update-github-pull-request
+spec:
+  description: >-
+    Update a GitHub Pull Request with information as part of a Pipeline.
+  workspaces:
+    - name: output
+  params:
+    - name: git-pr-comments-url
+      description: URL to the pull request to post a comment to.
+      type: string
+  steps:
+    - name: rasa
+      image: registry.redhat.io/ubi8/ubi-minimal:latest
+      # TODO: This should only run when something was actually tested. Otherwise it should say that its good to go.
+      # TODO: The rasa test command actually produces results that would be good to have available.
+      #       Uploading them to the PR would be trivial, but that's currently not possible: https://github.com/isaacs/github/issues/1133
+      script: |
+        #!/usr/bin/env bash
+        curl -s -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" -X POST -d '{"body": "Testing successfully completed. Please have a look and merge at your discretion."}' $(params.git-pr-comments-url)
+      env:
+        - name: GITHUB_ACCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: commit-status-tracker-git-secret
+              key: token

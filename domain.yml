@@ -1,0 +1,83 @@
+version: "2.0"
+
+session_config:
+  session_expiration_time: 60  # value in minutes
+  carry_over_slots_to_new_session: true  # set to false to forget slots between sessions
+
+intents: # things that the user might want from the bot
+  - greet
+  - thankyou
+  - goodbye
+  - bot_challenge
+  - how_to_get_started
+  - nlu_fallback
+  - tell_a_joke
+  - get_hackernews
+  - get_random_restaurant
+  - get_cryptocurrency_prices
+  - chitchat
+  - open_garage
+
+entities:
+  - cuisine
+
+slots:
+  cuisine:
+    type: text
+    influence_conversation: false
+    auto_fill: false
+
+responses: # these are static responses to certain intents
+  utter_greet:
+    - image: "https://i.imgur.com/7R90LsC.jpeg"
+      text: "Hello there"
+
+  utter_goodbye:
+    - text: "Goodbye :-("
+
+  utter_default:
+    - text: "Sorry, I didn't get that. Can you please rephrase?"
+
+  utter_youarewelcome:
+    - text: "You're very welcome."
+
+  utter_iamabot:
+    - text: "I am a bot, powered by Rasa, running on OpenShift."
+
+  utter_get_started:
+    - text: "I can help you find places to eat, inform you about crypto currencies, tell jokes and much more."
+
+  utter_chitchat/ask_name:
+    - image: "https://i.imgur.com/rlsHlVb.jpg"
+      text: My name is DUSBot.
+    - text: I am called DUSBot.
+
+  utter_chitchat/ask_location:
+    - image: "https://i.imgur.com/LGJYUC7.jpeg"
+      text: In three years, Cyberdyne will become the largest supplier of military computer systems. All stealth bombers are upgraded with Cyberdyne computers, becoming fully unmanned. Afterwards, they fly with a perfect operational record. The Skynet Funding Bill is passed. The system goes online on August 4th, 1997. Human decisions are removed from strategic defense. Skynet begins to learn at a geometric rate. It becomes self-aware at 2:14 AM, Eastern time, August 29th. In a panic, they try to pull the plug.
+    - text: I am currently living in OpenShift based in Frankfurt.
+
+  #utter_slots_values:
+  #  - text: "I am going to run a restaurant search using the following parameters:\n
+  #           - cuisine: {cuisine}"
+
+  #utter_ask_cuisine:
+  #  - text: "What cuisine?"
+
+  #utter_submit:
+  #- text: "All done!"
+
+actions: # more complex actions that are implemented in Python (actions/actions.py)
+  - action_tell_joke
+  - action_get_hackernews
+  - action_random_restaurant
+  - action_get_crypto_price
+  - action_open_garage
+  #- action_validate_restaurant_form
+
+forms:
+  restaurant_form:
+    cuisine:
+    - type: from_entity
+      entity: cuisine
+      not_intent: chitchat

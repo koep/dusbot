@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: dusbot
+    app.kubernetes.io/component: dusbot
+    app.kubernetes.io/instance: dusbot
+    app.kubernetes.io/part-of: DUSBot
+    app.openshift.io/runtime-version: latest
+  name: dusbot
+spec:
+  ports:
+  - name: 5005-tcp
+    port: 5005
+    protocol: TCP
+    targetPort: 5005
+  selector:
+    app: dusbot
+    deploymentconfig: dusbot
+  sessionAffinity: None
+  type: ClusterIP

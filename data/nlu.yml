@@ -1,0 +1,445 @@
+version: "2.0"
+
+nlu:
+
+- intent: greet
+  examples: |
+    - hi
+    - hello
+    - how are you
+    - good morning
+    - good evening
+    - hey
+    - moin
+    - what's up
+    - yo
+    - Bom dia
+    - Bonjour
+    - Good Morning
+    - Good morning
+    - Good mourning
+    - Guten Morgen
+    - HELLO
+    - HEY
+    - HEllo
+    - HI
+    - Hallo
+    - Hei
+    - Hellllooooooo
+    - Hello
+    - Hello Bot
+    - Hello!
+    - Hey
+    - Hey bot
+    - Heya
+    - Heylo
+    - Hi
+    - Hi bot
+    - Hi man
+    - Hi there
+    - Hi!
+    - Hi'
+    - Hi,
+    - Hi, bot
+    - Hieee
+    - Hieeeeeeeeeeeee
+    - Hola
+    - I said, helllllloooooO!!!!
+    - Well hello there ;)
+    - What is up?
+    - Whats up
+    - Whats up my bot
+    - Whats up?
+    - ayyyy whaddup
+    - bonjour
+    - ey boss
+    - good moring
+    - greet
+    - greetings
+    - hai
+    - hallo
+    - halloo
+    - halloooo
+    - halo
+    - heeey
+    - heelio
+    - hell9o
+    - hellio
+    - hello everybody
+    - hello friend
+    - hello hi
+    - hello is anybody there
+    - hello it is me again
+    - hello robot
+    - hello sweatheart
+    - hello sweet boy
+    - hello there
+    - hello world
+    - hello?
+    - hello]
+    - hellooo
+    - helloooo
+    - helo
+    - hey bot
+    - hey bot!
+    - hey dude
+    - hey hey
+    - hey let's talk
+    - hey ther
+    - hey there
+    - hey there boy
+    - hey there..
+    - hey, let's talk
+    - heya
+    - heyho
+    - heyo
+    - hhola
+    - hi !
+    - hi Mister
+    - hi again
+    - hi can you speak ?
+    - hi folks
+    - hi friend
+    - hi friends
+    - hi hi
+    - hi pal!
+    - hi there
+    - hi there it's me
+    - hi!
+    - hi.........................................................
+    - hi?
+    - hieee
+    - hii
+    - hiihihi
+    - hiii
+    - hlo
+    - hola
+    - howdy
+    - jojojo
+    - jop
+    - konichiwa
+    - merhaba
+    - salut
+    - sup
+    - wasssup
+    - wasssup!
+    - what up
+    - whats popping
+    - whats up
+    - yoo
+    - ssup?
+    - helleo
+
+- intent: bot_challenge
+  examples: |
+    - are you a bot
+    - am i talking to a human?
+    - are you a human?
+    - are you human?
+    - who are you
+    - what are you
+    - hey are you human
+    - are u human
+    - r u a human
+    - are you real human?
+    - you are a human
+    - Rara, are you a human?
+    - you are bot or human?
+    - are you human
+    - ok, i know i confused you there being a human! :)
+    - you are human or bot
+    - Are you human?
+    - are you a human ?
+    - Are you human ?
+    - Are you a human being?
+    - sara, are you a robot or human?
+    - r u real?
+    - are you a real person
+    - are u a real person?
+    - Are you a real person?
+    - are you a real person?
+    - are you real person or chat bot?
+    - So I'm here Today to ask one very simple question, what are you?
+    - you sound like a real human
+    - wow you sound like real human
+
+- intent: goodbye
+  examples: |
+    - bye
+    - goodbye
+    - ciao
+    - tschüss
+    - ok bai
+    - Bye
+    - Bye bye
+    - adios
+    - adios?
+    - bye .
+    - bye :P
+    - bye bot
+    - bye bye
+    - bye bye bot
+    - bye for now
+    - bye udo
+    - bye was nice talking to you
+    - bye!
+    - byee
+    - catch you later
+    - cya
+    - farewell
+    - good bye
+    - good night
+    - goodbye.
+    - goodnight
+    - gotta go
+    - k byyye #slay
+    - ok Bye
+    - ok bye
+    - ok, bye
+    - ok.bye
+    - see u later
+    - see ya
+    - see you
+    - see you . bye
+    - take care
+    - then bye
+    - tlak to you later
+    - toodle-oo
+    - Exit
+    - Close this talk
+    - byr
+
+- intent: thankyou
+  examples: |
+    - thanks
+    - thank you
+    - thanks friend
+    - danke
+    - thx
+    - ty
+    - Cool. Thanks
+    - Great, thanks
+    - Thank you
+    - Thank you Sara
+    - Thank you so much
+    - Thank's!
+    - Thanks
+    - Thanks bot
+    - Thanks for that
+    - Thanks!
+    - amazing, thanks
+    - cheers
+    - cheers bro
+    - cool thank you
+    - cool thanks
+    - cool, thanks
+    - great thanks
+    - ok thanks
+    - ok thanks sara
+    - ok thanks!
+    - perfect thank you
+    - thank u
+    - thank you anyways
+    - thanks a bunch for everything
+    - thanks a lot
+    - thanks for the help
+    - thanks this is great news
+    - thanks you
+    - thanks!
+    - thankyou
+    - thnks
+    - yes thanks
+    - thanks for your information
+    - thanks f
+
+- intent: how_to_get_started
+  examples: |
+    - how do I get started
+    - what can i do
+    - start
+    - please tell me what you can do
+    - what can you help me with
+    - what is your purpose
+    - Can you explain me in one sentence what you are doing?
+    - Can you help me?
+    - Could you please show me what you can
+    - Great, is there anything else you can do, bot?
+    - How can you help me
+    - How you help me?
+    - I need help
+    - I need some help
+    - What are my options
+    - What are you able to do?
+    - What can I ask you?
+    - What can I do?
+    - What can you demo
+    - What can you do
+    - What can you do for me?
+    - What can you do?
+    - What can you tell me?
+    - What do you do
+    - anything els
+    - are there any other options?
+    - can I ask you anything else?
+    - can you do anything else?
+    - can you help me
+    - can you help me?
+    - come back
+    - cool! can I do something else here?
+    - hello what can you do for me
+    - help
+    - help me
+    - help please
+    - help pls
+    - help?
+    - hep me
+    - hm that doesnt quite help me is there anything else you can do?
+    - how can i use you
+    - how can you help me
+    - how can you help me?
+    - how can you help?
+    - how does this work?
+    - how u can help me
+    - how you help me
+    - i asked you if you can do anything else
+    - i don't know what i want
+    - i need help
+    - more info
+    - now what?
+    - options
+    - show me the menu
+    - show me what's possible
+    - so now what
+    - so what can you do
+    - so what can you do?
+    - so what can you help me with?
+    - so what next?
+    - talk to me
+    - talk to me!
+    - tell me something you can do
+    - tell me what's your skill
+    - um what now
+    - what are all the things you understand?
+    - what are the options?
+    - what are you ding
+    - what are you doing
+    - what are you good at?
+    - what can I ask ?
+    - what can I ask you?
+    - what can I do here
+    - what can I do with Sara?
+    - what can I do with this bot
+    - what can i do here
+    - what can i do now
+    - what can u do
+    - what can we talk about?
+    - what can you answer
+    - what can you do
+    - what can you do for me
+    - what can you do, sara?
+    - what can you do?
+    - what can you offer me?
+    - what can you tell me
+    - what can you?
+    - what cn u do for me ?
+    - what do you do
+    - what do you do?
+    - what do you know except this?
+    - what else can I do here?
+    - what else can i do
+    - what else can i do?
+    - what else can you do?
+    - what else can you help with?
+    - what i have to do
+    - what is this bot for
+    - what u can do
+    - what u can do?
+    - what you can do
+    - what you can do for me?
+    - what you can do?
+    - what you do
+    - what you doing?
+    - what you talk about?
+    - you can hep me
+    - what can you teache me?
+    - Can you do calculations?
+    - what you can
+
+- intent: chitchat/ask_name
+  examples: |
+    - What's your name?
+    - What is your name?
+    - May I know your name?
+    - What do people call you?
+    - Do you have a name?
+
+- intent: chitchat/ask_location
+  examples: |
+    - Where are you?
+    - Where do you live?
+    - Where are you hosted?
+    - Where are you running?
+    - What is your location?
+    - Send location
+    - Where u at?
+
+- intent: tell_a_joke
+  examples: |
+    - tell me a joke
+    - please tell me a joke
+    - can you tell jokes
+    - cheer me up
+    - i am sad
+    - please cheer me up
+    - chuck corris
+    - chuck
+
+- intent: get_hackernews
+  examples: |
+    - what's on hacker news
+    - hacker news
+    - hackernews
+    - hn
+    - tech news
+
+- intent: get_random_restaurant
+  examples: |
+    - choose a restaurant for me
+    - lunch
+    - what restaurant can you recommend?
+    - i am hungry
+    - can you recommend a restaurant
+    - hungry
+    - i would like to eat
+    - i need to eat
+    - where can i get lunch
+    - lunch
+    - what can you recommend for lunch
+    - where to go for lunch
+    - where to eat lunch
+    - where can i go for lunch
+    - can you help me find food
+    - what's a good restaurant?
+
+- intent: get_cryptocurrency_prices
+  examples: |
+    - buy the dip
+    - should i buy the dip
+    - should i hodl
+    - hodl
+    - bitcoin
+    - tell me about bitcoin
+    - hodl?
+    - iota
+    - cryptocurrencies
+    - ethereum
+    - satoshi
+    - crypto
+
+- intent: open_garage
+  examples: |
+    - open sesame
+    - open the garage
+    - please open the garage
+    - can you let me into the garage?
+    - open 

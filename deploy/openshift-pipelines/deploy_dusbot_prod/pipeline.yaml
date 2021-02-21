@@ -1,0 +1,49 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: deploy-dusbot-to-prod
+spec:
+  tasks:
+  # We assume that a merge to "main" only happens when the rasa image with the tag "test" works fine. 
+  # In this step, we only point "latest" to whatever "test" points to.
+  - name: tag-rasa-image
+    taskRef:
+      name: tag-image
+      kind: Task
+    params:
+    - name: imagestream-name
+      value: dusbot
+    - name: git-pr-revision
+      value: test
+    - name: tag-name
+      value: latest
+    - name: namespace
+      value: dusbot-dev
+  # We assume that a merge to "main" only happens when the action-server image with the tag "test" works fine. 
+  # In this step, we only point "latest" to whatever "test" points to.
+  - name: tag-action-server-image
+    taskRef:
+      name: tag-image
+      kind: Task
+    params:
+    - name: imagestream-name
+      value: action-server
+    - name: git-pr-revision
+      value: test
+    - name: tag-name
+      value: latest
+    - name: namespace
+      value: dusbot-dev
+  # Tigger a rollout of the DUSBot Deployment to the production stage
+  - name: rollout-latest-images
+    taskRef:
+      name: control-deployment-rollout
+      kind: Task
+    runAfter:
+      - tag-action-server-image
+      - tag-rasa-image
+    params:
+    - name: deployment
+      value: dusbot
+    - name: namespace
+      value: dusbot-prod

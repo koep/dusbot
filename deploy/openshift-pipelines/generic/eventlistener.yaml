@@ -1,0 +1,54 @@
+# The EventListener is a resource for connecting a TriggerBinding to the TriggerTemplate. 
+# It also creates an application running in the project namespace that will invoke the pipeline when required.
+# For example an EventListener pod, service and route
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: dusbot-eventlistener
+spec:
+  serviceAccountName: pipeline
+  triggers:
+    # gets triggered when somene opens, updates or reopens a pull request on GitHub
+    # against the test branch
+    # every time this happens, we test the code
+    - name: github-open-pull-request
+      bindings:
+        - ref: dusbot-triggerbinding-pr
+      template:
+        name: dusbot-triggertemplate-pr
+      interceptors:
+        - cel:
+            filter: >-
+              (header.match('X-GitHub-Event', 'pull_request') &&
+              body.action in ['opened', 'synchronize', 'reopened'] &&
+              body.pull_request.base.ref == 'test')
+
+    # gets triggered when someone pushes to the test branch
+    # this includes merging of pull requests
+    # every time this happens, we build container images and deploy them to the test stage
+    - name: github-push-to-test
+      bindings:
+        - ref: dusbot-triggerbinding-build
+      template:
+        name: dusbot-triggertemplate-build
+      interceptors:
+        - cel:
+            filter: >-
+              (header.match('X-GitHub-Event', 'push') &&
+              body.ref == 'refs/heads/test')
+
+    # gets triggered when someone pushes to the main branch
+    # this includes merging of pull requests
+    # when this happens, we assume that testing has been complete and we can safely use the images in production
+    - name: github-push-to-main
+      bindings:
+        - ref: dusbot-triggerbinding-prod
+      template:
+        name: dusbot-triggertemplate-prod
+      interceptors:
+        - cel:
+            filter: >-
+              (header.match('X-GitHub-Event', 'push') &&
+              body.ref == 'refs/heads/main')
+
+# ref https://bigkevmcd.github.io/kubernetes/tekton/pipeline/2020/02/05/cel-interception.html

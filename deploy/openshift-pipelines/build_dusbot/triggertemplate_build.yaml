@@ -1,0 +1,44 @@
+# The TriggerTemplate connects the parameters defined in the TriggerBinding with a PipelineRun.
+# The PipelineRun is defined within a resourcetemplates such that an instance of a PipelineRun is created 
+# at execution time from the TriggerTemplate with the specific parameters from the TriggerBinding.
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+ name: dusbot-triggertemplate-build
+spec:
+ params: # incoming parameters from the TriggerBinding
+ - name: git-pr-revision
+ - name: git-pr-clone-url
+ resourcetemplates:
+ - apiVersion: tekton.dev/v1beta1
+   kind: PipelineRun
+   metadata:
+     generateName: build-dusbot-run-
+     name: build-dusbot-run-$(uid) # we want unique names for PipelineRun objects
+   spec:
+     pipelineRef:
+       name: build-dusbot-and-deploy-to-test
+     params:
+       - name: git-pr-clone-url
+         value: $(tt.params.git-pr-clone-url)
+       - name: git-pr-revision
+         value: $(tt.params.git-pr-revision)
+       - name: image-action-server
+         value: image-registry.openshift-image-registry.svc:5000/dusbot-dev/action-server
+       - name: image-dusbot
+         value: image-registry.openshift-image-registry.svc:5000/dusbot-dev/dusbot
+     resources:
+     - name: source
+       resourceSpec:
+         type: git
+         params:
+           - name: revision
+             value: $(tt.params.git-pr-revision)
+           - name: url
+             value: $(tt.params.git-pr-clone-url)
+     serviceAccountName: github-tekton-sa # can be removed when using a public GitHub repository
+     timeout: 0h15m0s
+     workspaces:
+     - name: shared-pr-workspace
+       persistentvolumeclaim:
+         claimName: build-dusbot-volume

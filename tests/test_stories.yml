@@ -1,0 +1,96 @@
+# https://rasa.com/docs/rasa/testing-your-assistant#writing-test-stories
+version: "2.0"
+
+stories:
+
+# greet -> how to get started -> thank you
+- story: Test 'how_to_get_started' story
+  steps:
+  - user: |
+      Hi there
+    intent: greet
+  - action: utter_greet
+  - user: |
+      What can you help me with?
+    intent: how_to_get_started
+  - action: utter_get_started
+  - user: |
+      Thanks!
+    intent: thankyou
+  - action: utter_youarewelcome
+
+# greet -> tell me a joke -> thank you
+- story: Test 'tell_a_joke' story
+  steps:
+  - user: |
+      What's up?
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Tell me a joke
+    intent: tell_a_joke
+  - action: action_tell_joke
+
+# greet -> recommend a restaurant -> thank you
+- story: Test 'random_restaurant' story
+  steps:
+  - user: |
+      Hello
+    intent: greet
+  - action: utter_greet
+  - user: |
+     Choose a restaurant for me
+    intent: get_random_restaurant
+  - action: action_random_restaurant
+  - user: |
+      Thanks!
+    intent: thankyou
+  - action: utter_youarewelcome
+
+# greet -> get current crypto prices --> thank you
+- story: Test 'show_cryptoprice' story
+  steps:
+  - user: |
+      Hello
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Hodl?
+    intent: get_cryptocurrency_prices
+  - action: action_get_crypto_price
+  - user: |
+      Thanks!
+    intent: thankyou
+  - action: utter_youarewelcome
+
+# greet -> challenge the bot --> goodbye
+- story: Test 'bot_challenge' story
+  steps:
+  - user: |
+      Hello
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Are you a bot?
+    intent: bot_challenge
+  - action: utter_iamabot
+  - user: |
+      Okay, bye.
+    intent: goodbye
+  - action: utter_goodbye
+
+# greet -> open the garage door --> thank you
+- story: Test 'open_garage' story
+  steps:
+  - user: |
+      Hello
+    intent: greet
+  - action: utter_greet
+  - user: |
+      Can you please open the garage?
+    intent: open_garage
+  - action: action_open_garage
+  - user: |
+      Thank you!
+    intent: thankyou
+  - action: utter_youarewelcome

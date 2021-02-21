@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dusbot
+    app.kubernetes.io/component: dusbot
+    app.kubernetes.io/instance: dusbot
+    app.kubernetes.io/name: dusbot
+    app.kubernetes.io/part-of: DUSBot
+    app.openshift.io/runtime: python
+    app.openshift.io/runtime-version: latest
+  name: dusbot
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: dusbot
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+        :
+    metadata:
+      labels:
+        app: dusbot
+        deploymentconfig: dusbot
+    spec:
+      volumes:
+      - name: rasa-credentials-volume
+        secret:
+          secretName: rasa-credentials
+      containers:
+      # DUSBot container serving the rasa model
+      - args:
+        - run
+        - -vv
+        - -m
+        - dusbot.tar.gz
+        - --remote-storage
+        - aws
+        command:
+        - rasa
+        env:
+        - name: AWS_ENDPOINT_URL
+          valueFrom:
+            secretKeyRef:
+              key: AWS_ENDPOINT_URL
+              name: aws-access-tokens
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: AWS_SECRET_ACCESS_KEY
+              name: aws-access-tokens
+        - name: BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              key: BUCKET_NAME
+              name: aws-access-tokens
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              key: AWS_ACCESS_KEY_ID
+              name: aws-access-tokens
+        - name: AWS_DEFAULT_REGION
+          valueFrom:
+            secretKeyRef:
+              key: AWS_DEFAULT_REGION
+              name: aws-access-tokens
+        image: image-registry.openshift-image-registry.svc:5000/dusbot-dev/dusbot:latest
+        imagePullPolicy: Always
+        name: dusbot
+        ports:
+        - containerPort: 5005
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5005
+            scheme: HTTP
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          failureThreshold: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5005
+            scheme: HTTP
+          initialDelaySeconds: 90
+        resources:
+          limits:
+            cpu: 200m
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 400Mi
+        volumeMounts:
+        - mountPath: /tmp/credentials
+          name: rasa-credentials-volume
+          readOnly: false
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - cp /tmp/credentials/credentials.yml /app/credentials.yml
+      # Action server container contacting third party APIs etc. to run custom actions
+      - args:
+        - start
+        - -vv
+        - --actions
+        - actions
+        image: image-registry.openshift-image-registry.svc:5000/dusbot-dev/action-server:latest
+        imagePullPolicy: Always
+        name: action-server
+        ports:
+        - containerPort: 5055
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: 5055
+        readinessProbe:
+          tcpSocket:
+            port: 5055
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 10m
+            memory: 50Mi
+        env:
+        - name: CRYPTOCOMPARE_APIKEY
+          valueFrom:
+            secretKeyRef:
+              key: CRYPTOCOMPARE_APIKEY
+              name: cryptocompare-apikey
+        - name: DUSGARAGE_CREDENTIALS
+          valueFrom:
+            secretKeyRef:
+              key: DUSGARAGE_CREDENTIALS
+              name: dusgarage-credentials
+      restartPolicy: Always

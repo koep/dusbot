@@ -1,0 +1,5 @@
+# This TriggerBinding identifies which fields are to be extracted from the webhook JSON payload to be presented to the TriggerTemplate.
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: dusbot-triggerbinding-prod

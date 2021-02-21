@@ -1,0 +1,7 @@
+# Also update the image in `task_rasa.yaml`
+FROM docker.io/rasa/rasa:2.1.0-full
+# Also see .dockerignore
+COPY ./ /app
+# Required to serve the model from S3
+# https://rasa.com/docs/rasa/model-storage#amazon-s3-storage
+RUN pip install boto3

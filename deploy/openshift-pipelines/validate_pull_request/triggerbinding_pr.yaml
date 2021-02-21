@@ -1,0 +1,17 @@
+# This TriggerBinding identifies which fields are to be extracted from the webhook JSON payload to be presented to the TriggerTemplate.
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: dusbot-triggerbinding-pr
+spec:
+  params:
+  - name: git-pr-revision
+    value: $(body.pull_request.head.sha)
+  - name: git-pr-clone-url
+    value: $(body.repository.ssh_url) # change to clone_url once repo is public
+  - name: git-html-url
+    value: $(body.repository.html_url)
+  - name: git-pr-comments-url # used to post comments into agiven PR
+    value: $(body.pull_request.comments_url)
+  - name: git-pr-author
+    value: $(body.pull_request.user.login)

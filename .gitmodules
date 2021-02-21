@@ -1,0 +1,3 @@
+[submodule "deploy/experimental"]
+	path = deploy/experimental
+	url = https://github.com/tektoncd/experimental.git

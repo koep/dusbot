@@ -1,0 +1,16 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+ name: dusbot-triggertemplate-prod
+spec:
+ resourcetemplates:
+ - apiVersion: tekton.dev/v1beta1
+   kind: PipelineRun
+   metadata:
+     generateName: deploy-dusbot-to-prod-
+   spec:
+     pipelineRef:
+       name: deploy-dusbot-to-prod
+     params:
+     serviceAccountName: github-tekton-sa
+     timeout: 0h15m0s

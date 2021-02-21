@@ -1,0 +1,5 @@
+# The action-server and the rasa server run in the same pod (both in podman and in OpenShift).
+# Thus, localhost is appropriate.
+# TODO: It might be possible to run this component serverless (Knative), but it would add a bit of networking overhead.
+action_endpoint:
+  url: http://localhost:5055/webhook

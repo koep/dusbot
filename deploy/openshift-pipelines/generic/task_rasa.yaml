@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: rasa
+spec:
+  description: >-
+    This Task can be used to perform various rasa CLI operations (train, test).
+  workspaces:
+    - name: output
+  params:
+    - name: operation
+      description: The rasa CLI operation to run (e. g. train, test)
+      type: string
+      # TODO: Check if there is a more slim image.
+    - name: rasa-image
+      description: The container image that contains the rasa CLI
+      type: string
+      default: "docker.io/rasa/rasa:2.1.0-full"
+  steps:
+    - name: rasa-cli
+      image: $(params.rasa-image)
+      # A bit of a hack to determine whether or not we need to test the rasa machine learning model or not.
+      # If the pipeline wants to test, check whether or not the training step said that no training was needed. we can skip testing then.
+      script: |
+        #!/usr/bin/env bash
+        logfile='rasa.log'
+        cd output
+        case "$(params.operation)" in
+          "rasa train --fixed-model-name dusbot --debug"|"rasa test --cross-validation --debug"|"rasa test --no-plot --stories tests/test_stories.yml --fail-on-prediction-errors --debug")
+            if grep -q "Nothing changed. You can use the old model" ${logfile}
+            then
+              echo "No need to test. Skipping."
+            else
+              $(params.operation) >> ${logfile}
+            fi
+          ;;
+          *)
+            # Do whatever the pipelines says
+            $(params.operation) >> ${logfile}
+          ;;
+        esac

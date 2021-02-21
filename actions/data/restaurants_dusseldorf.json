@@ -1,0 +1,94 @@
+{
+    "restaurants": [
+        {
+            "id": 0,
+            "name": "Phoenix Restaurant",
+            "cuisine": "Vietnamese",
+            "address": "Herzogstraße 5, 40217 Düsseldorf"
+        },
+        {
+            "id": 1,
+            "name": "Anadolu",
+            "cuisine": "Turkish",
+            "address": "Graf-Adolf-Platz 6, 40213 Düsseldorf"
+        },
+        {
+            "id": 2,
+            "name": "Chidonkey",
+            "cuisine": "Mexican",
+            "address": "Königsallee 56, 40212 Düsseldorf"
+        },
+        {
+            "id": 3,
+            "name": "Manju",
+            "cuisine": "Indian",
+            "address": "Königsallee 56, 40212 Düsseldorf"
+        },
+        {
+            "id": 4,
+            "name": "Mr. Phung",
+            "cuisine": "Chinese",
+            "address": "Königsallee 56, 40212 Düsseldorf"
+        },
+        {
+            "id": 5,
+            "name": "FRITS&FRIES",
+            "cuisine": "German",
+            "address": "Königsallee 56, 40212 Düsseldorf"
+        },
+        {
+            "id": 6,
+            "name": "Sattgrün Mitte",
+            "cuisine": "Vegan",
+            "address": "Graf-Adolf-Platz 6, 40213 Düsseldorf"
+        },
+        {
+            "id": 7,
+            "name": "AI Wok Asia Restaurant",
+            "cuisine": "Asian",
+            "address": "Friedrichstraße 5, 40217 Düsseldorf"
+        },
+        {
+            "id": 8,
+            "name": "Byblos Restaurant Friedrichstadt",
+            "cuisine": "Lebanese",
+            "address": "Friedrichstraße 8, 40217 Düsseldorf"
+        },
+        {
+            "id": 9,
+            "name": "Pick & Goertz",
+            "cuisine": "German",
+            "address": "Friedrichstraße 49, 40217 Düsseldorf"
+        },
+        {
+            "id": 10,
+            "name": "Pizzeria Adria Eiscafe",
+            "cuisine": "Italian",
+            "address": "Herzogstraße 9, 40217 Düsseldorf"
+        },
+        {
+            "id": 11,
+            "name": "Berliner Imbiss Düsseldorf",
+            "cuisine": "German",
+            "address": "Graf-Adolf-Platz 1, 40213 Düsseldorf"
+        },
+        {
+            "id": 12,
+            "name": "ALEX Düsseldorf",
+            "cuisine": "German",
+            "address": "Kasernenstraße 48, Graf-Adolf-Platz 15, 40213 Düsseldorf"
+        },
+        {
+            "id": 13,
+            "name": "Basil's Restaurant & Bar",
+            "cuisine": "Italian",
+            "address": "Haroldstraße 30, 40213 Düsseldorf"
+        },
+        {
+            "id": 14,
+            "name": "MAREDO Düsseldorf Königsallee",
+            "cuisine": "Steak",
+            "address": "Königsallee 92, 40212 Düsseldorf"
+        }
+    ]
+}

@@ -1,0 +1,160 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: test-pull-request
+spec:
+  resources:
+     - name: source
+       type: git
+  workspaces:
+  - name: shared-pr-workspace
+  # This Pipeline accepts the following paramets (can e. g. be set in a TriggerTemplate)
+  params:
+  - name: git-pr-clone-url
+    type: string
+    description: git url of the source pull request
+  - name: git-pr-revision
+    type: string
+    description: git hash
+  - name: git-pr-comments-url
+    type: string
+    description: url to the pr that is being tested
+  - name: git-pr-author
+    type: string
+    description: who authored the PR
+  - name: image-action-server
+    type: string
+    description: image to be build from the code
+  - name: image-dusbot
+    type: string
+    description: image to be build from the code
+  tasks:
+  # Clone the code
+  - name: fetch-repository
+    taskRef:
+      name: git-clone # git clone expects a workspace named "output"
+      kind: ClusterTask
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: url
+      value: $(params.git-pr-clone-url)
+    - name: deleteExisting
+      value: "true"
+    - name: revision
+      value: $(params.git-pr-revision)
+  # Pull latest model from S3
+  - name: pull-latest-model
+    taskRef:
+      name: awscli # awscli expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - fetch-repository
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: command
+      value: aws s3 sync s3://${BUCKET_NAME}/ output/models/
+  # Validate model data (https://blog.rasa.com/rasa-automated-tests/)
+  # Before you measure the performance of your models,
+  # you'll want to be sure the data you're using to train is free of errors.
+  # To check your training data for errors and conflicts, run the command:
+  - name: validate-rasa-model-data
+    taskRef:
+      name: rasa # rasa expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - fetch-repository
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: operation
+      value: rasa data validate stories --fail-on-warnings --max-history 5 --debug
+  # Train the model if something changed
+  - name: train-rasa-model
+    taskRef:
+      name: rasa
+      kind: Task
+    runAfter:
+      - pull-latest-model
+      - validate-rasa-model-data
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: operation
+      value: rasa train --fixed-model-name dusbot --debug
+  # Run cross validation
+  # Cross validation is another technique for testing how well the NLU model generalizes.
+  # This step cross validates both the NLU model as well as the dialogue (core) model
+  - name: cross-validate-rasa-model
+    taskRef:
+      name: rasa # rasa expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - train-rasa-model
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: operation
+      value: rasa test --cross-validation --debug
+  # End to end test the model
+  # End-to-end tests get their name because they measure how well the models generalize on the entire conversation.
+  # Using a test data format called end-to-end stories, this method evaluates both the NLU model and the dialogue management model. 
+  - name: test-rasa-model
+    taskRef:
+      name: rasa # rasa expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - train-rasa-model
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: operation
+      value: rasa test --no-plot --stories tests/test_stories.yml --fail-on-prediction-errors --debug # test both NLU and in one step
+  # Run Python unit tests to test cutom actions
+  - name: test-custom-actions
+    taskRef:
+      name: rasa # rasa expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - train-rasa-model
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: operation
+      value: python -m unittest --verbose
+  # Push the new model back to S3 so that it can be consumed directly from there
+  - name: push-latest-model
+    taskRef:
+      name: awscli # awscli expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - test-rasa-model
+      - cross-validate-rasa-model
+      - test-custom-actions
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: command
+      value: aws s3 sync output/models/ s3://${BUCKET_NAME}/
+  # Update the Pull Request
+  - name: update-pull-request
+    taskRef:
+      name: update-github-pull-request # update-github-pull-request expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - push-latest-model
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: git-pr-comments-url
+      value: $(params.git-pr-comments-url)

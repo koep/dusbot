@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: control-deployment-rollout
+spec:
+  description: >-
+    This task uses the OpenShift CLI to modify and watch a `Deployment` rollout.
+  params:
+    - name: deployment
+      description: The name of the Kubernetes deployment object that shall be interacted with.
+      type: string
+    - name: namespace
+      description: The namespace in which the Kubernetes Deployment object resides in.
+      type: string
+  steps:
+    - name: modify-deployment-rollout
+      # https://quay.io/repository/openshift/origin-cli?tag=latest&tab=tags
+      image: quay.io/openshift/origin-cli:4.6.0
+      command: ["/bin/bash", "-c"]
+      # Thanks https://cookbook.openshift.org/application-lifecycle-management/how-can-i-trigger-a-new-deployment-of-an-application.html
+      args:
+        - |-
+          kubectl -n $(inputs.params.namespace) patch deployment $(inputs.params.deployment) --patch "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"last-restart\":\"`date +'%s'`\"}}}}}" 
+    - name: watch-deployment-rollout
+      # https://quay.io/repository/openshift/origin-cli?tag=latest&tab=tags
+      image: quay.io/openshift/origin-cli:4.6.0
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          kubectl -n $(inputs.params.namespace) rollout status -w deployment $(inputs.params.deployment)

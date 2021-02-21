@@ -1,0 +1,34 @@
+{
+    "cryptocurrencies": [
+        {
+            "id": 0,
+            "name": "Bitcoin",
+            "shortname": "BTC"
+        },
+        {
+            "id": 1,
+            "name": "Litecoin",
+            "shortname": "LTC"
+        },
+        {
+            "id": 2,
+            "name": "IOTA",
+            "shortname": "MIOTA"
+        },
+        {
+            "id": 3,
+            "name": "Ethereum",
+            "shortname": "ETH"
+        },
+        {
+            "id": 4,
+            "name": "Ripple",
+            "shortname": "XRP"
+        },
+        {
+            "id": 5,
+            "name": "NEO",
+            "shortname": "NEO"
+        }
+    ]
+}

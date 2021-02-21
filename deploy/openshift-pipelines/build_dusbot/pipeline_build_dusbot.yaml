@@ -1,0 +1,141 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-dusbot-and-deploy-to-test
+spec:
+  resources:
+     - name: source
+       type: git
+  workspaces:
+  - name: shared-pr-workspace
+  # This Pipeline accepts the following paramets (can e. g. be set in a TriggerTemplate)
+  params:
+  - name: git-pr-clone-url
+    type: string
+    description: The URL of the pull request on GitHub.
+  - name: git-pr-revision
+    type: string
+    description: The git revision hash of the latest commit.from the pull request.
+  - name: image-action-server
+    type: string
+    description: The name of the image used for the action-server component of DUSBot.
+  - name: image-dusbot
+    type: string
+    description: The name of the image used for the rasa component of DUSBot.
+  tasks:
+  # Clone the code
+  - name: fetch-repository
+    taskRef:
+      name: git-clone # git clone expects a workspace named "output"
+      kind: ClusterTask
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    - name: url
+      value: $(params.git-pr-clone-url)
+    - name: deleteExisting
+      value: "true"
+    - name: revision
+      value: $(params.git-pr-revision)
+  # Pull latest model from S3
+  - name: pull-latest-model
+    taskRef:
+      name: awscli # awscli expects a workspace named "output"
+      kind: Task
+    runAfter:
+      - fetch-repository
+    workspaces:
+    - name: output
+      workspace: shared-pr-workspace
+    params:
+    # The BUCKET_NAME variable is populated by a Kubernetes secret
+    - name: command
+      value: aws s3 sync s3://${BUCKET_NAME}/ output/models/
+  # Build the action-server container image and tag it to the git commit hash for unique identification
+  - name: build-action-server-image
+    taskRef:
+      name: buildah
+      kind: ClusterTask
+    runAfter:
+      - pull-latest-model
+    workspaces:
+    - name: source
+      workspace: shared-pr-workspace
+    params:
+    - name: IMAGE
+      value: $(params.image-action-server):$(params.git-pr-revision)
+    - name: TLSVERIFY
+      value: "false"
+    - name: DOCKERFILE
+      value: "/workspace/source/build/Containerfile.action-server"
+    - name: CONTEXT
+      value: "/workspace/source/"
+    - name: FORMAT
+      value: "docker"
+  # Build the rasa container image and tag it to the git commit hash for unique identification
+  - name: build-rasa-image
+    taskRef:
+      name: buildah
+      kind: ClusterTask
+    runAfter:
+      - pull-latest-model
+    workspaces:
+    - name: source
+      workspace: shared-pr-workspace
+    params:
+    - name: IMAGE
+      value: $(params.image-dusbot):$(params.git-pr-revision)
+    - name: TLSVERIFY
+      value: "false"
+    - name: DOCKERFILE
+      value: "/workspace/source/build/Containerfile.dusbot"
+    - name: CONTEXT
+      value: "/workspace/source/"
+    - name: FORMAT
+      value: "docker"
+  # Tag the previously built rasa container image with "test"
+  - name: tag-rasa-image
+    taskRef:
+      name: tag-image
+      kind: Task
+    runAfter:
+      - build-rasa-image
+    params:
+    - name: imagestream-name
+      value: dusbot
+    - name: git-pr-revision
+      value: $(params.git-pr-revision)
+    - name: tag-name
+      value: test
+    - name: namespace
+      value: dusbot-dev
+  # Tag the previously built rasa container image with "test"
+  - name: tag-action-server-image
+    taskRef:
+      name: tag-image
+      kind: Task
+    runAfter:
+      - build-action-server-image
+    params:
+    - name: imagestream-name
+      value: action-server
+    - name: git-pr-revision
+      value: $(params.git-pr-revision)
+    - name: tag-name
+      value: test
+    - name: namespace
+      value: dusbot-dev
+  # Tigger a rollout of the DUSBot Deployment to the test stage
+  - name: rollout-dusbot-to-test-stage
+    taskRef:
+      name: control-deployment-rollout
+      kind: Task
+    runAfter:
+      - tag-action-server-image
+      - tag-rasa-image
+    params:
+    - name: deployment
+      value: dusbot
+    - name: namespace
+      value: dusbot-test

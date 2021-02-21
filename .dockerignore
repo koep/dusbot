@@ -1,0 +1,14 @@
+tests/
+deploy/
+build/
+README.md
+results/
+models/
+.git
+.gitignore
+.gitmodules
+.cache/
+.config/
+image-digest
+rasa.log
+.dockerignore

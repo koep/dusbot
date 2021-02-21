@@ -1,0 +1,3 @@
+FROM docker.io/rasa/rasa-sdk:2.1.2
+# We only need the actions directory
+COPY ./actions /app/actions

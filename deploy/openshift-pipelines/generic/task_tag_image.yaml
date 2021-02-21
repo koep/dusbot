@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: tag-image
+spec:
+  params:
+    - name: imagestream-name
+      description: Name of image to be tagged.
+      type: string
+    - name: namespace
+      description: Which namespace to act in.
+      type: string
+    - name: git-pr-revision
+      description: The git hash of the recently built image.
+      type: string
+    - name: tag-name
+      description: The name of the tag that shall be set.
+      type: string
+  steps:
+    - name: update-image-tags
+      image: quay.io/openshift/origin-cli:latest
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+           oc tag $(inputs.params.imagestream-name):$(inputs.params.git-pr-revision) $(inputs.params.imagestream-name):$(inputs.params.tag-name) -n $(inputs.params.namespace)
